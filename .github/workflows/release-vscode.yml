@@ -69,6 +69,7 @@ jobs:
 
       - name: Read vsix
         id: vsix_version
+        if: steps.check.outcome == 'success'
         working-directory: apps/vscode/out
         run: echo "VSIX_PATH=$(find . -name "*.vsix" -print -quit)" >> $GITHUB_ENV
 
