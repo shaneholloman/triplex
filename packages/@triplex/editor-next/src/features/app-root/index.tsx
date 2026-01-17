@@ -31,6 +31,7 @@ export function AppRoot() {
           data-testid="scene"
           id="scene"
           src={`http://localhost:${window.triplex.env.ports.client}/scene`}
+          style={{ pointerEvents: "var(--canvas-pointer-events, auto)" /* can be used to disable pointer events on iframe */ }}
         />
       </div>
       {fg("ai_chat") && <AIChat />}

@@ -79,6 +79,7 @@ export function ResizableSurface({
           "--local-resizing-width",
           `${getProposedWidth({ initialWidth, location, splitterPosition })}px`,
         );
+        document.body.style.setProperty("--canvas-pointer-events", `none`);
       },
       onDragStart() {
         telemetry.event(actionId.resizeStart);
@@ -94,6 +95,7 @@ export function ResizableSurface({
           getProposedWidth({ initialWidth, location, splitterPosition }),
         );
         containerRef.current?.style.removeProperty("--local-resizing-width");
+        document.body.style.removeProperty("--canvas-pointer-events");
       },
       onGenerateDragPreview({ nativeSetDragImage }) {
         disableNativeDragPreview({ nativeSetDragImage });
@@ -133,7 +135,7 @@ export function ResizableSurface({
             state === "drag" && "opacity-100",
             splitterPosition === "end" && "-right-1.5 border-l-4",
             splitterPosition === "start" && "-left-1.5 border-r-4",
-            "absolute bottom-0 top-0 z-10 w-2 cursor-col-resize border-[var(--vscode-sash-hoverBorder)] opacity-0 delay-0 duration-100 hover:opacity-100 hover:transition-opacity hover:delay-200 hover:duration-150",
+            "group absolute bottom-0 top-0 z-10 w-2 cursor-col-resize border-[var(--vscode-sash-hoverBorder)] opacity-0 delay-0 duration-100 hover:opacity-100 hover:transition-opacity hover:delay-200 hover:duration-150",
           ])}
           data-testid="panel-drag-handle"
           ref={ref}

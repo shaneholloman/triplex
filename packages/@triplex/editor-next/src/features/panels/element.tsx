@@ -9,11 +9,6 @@ import {
   dropTargetForElements,
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  ComponentInstanceIcon,
-} from "@radix-ui/react-icons";
 import { compose, on, send } from "@triplex/bridge/host";
 import { cn } from "@triplex/lib";
 import { fg } from "@triplex/lib/fg";
@@ -43,6 +38,7 @@ import {
 } from "../../util/dnd";
 import { useSceneEvents, useSceneSelected } from "../app-root/context";
 import { ChildSelectedContext } from "./context";
+import { ShowElementChildrenButton } from "./element-children-button";
 
 const blockAll: InstructionType[] = [
   "make-child",
@@ -82,7 +78,7 @@ export function SceneElement(
   const [_isActive, setIsActive] = useState(false);
   const [isForciblyHovered, setForciblyHovered] = useState(false);
   const isCustomComponent =
-    props.type === "custom" && props.exportName && props.path;
+    props.type === "custom" && !!props.exportName && !!props.path;
   const hasChildren = props.children.length > 0;
   const [isUserExpanded, setExpanded] = useState(
     !isCustomComponent && hasChildren,
@@ -104,6 +100,12 @@ export function SceneElement(
   const matches = matchesFilter(filter, props);
   const isExpanded = isUserExpanded || !!filter;
   const notifyParentSelected = use(ChildSelectedContext);
+
+  // a component is considered "imported" if it is a custom type but its children do not include the components own AST path OR its path is different from its parent's path
+  const isImportedComponent =
+    props.type === "custom" &&
+    ((props.path && props.path !== props.parentPath) ||
+      !props.children.some((child) => child.astPath.includes(props.astPath)));
 
   interface DragData {
     astPath: string;
@@ -291,7 +293,12 @@ export function SceneElement(
   }, [dropState]);
 
   return (
-    <li className="relative">
+    <li
+      className={cn([
+        "relative",
+        isExpanded && isImportedComponent && "bg-overlay",
+      ])}
+    >
       {(hasChildren || isCustomComponent) && (
         <div
           className={cn([
@@ -332,29 +339,14 @@ export function SceneElement(
             ])}
           />
         )}
-        {(isCustomComponent || hasChildren) && (
-          <Pressable
-            actionId={
-              isExpanded
-                ? "scenepanel_element_collapse"
-                : "scenepanel_element_expand"
-            }
-            className="z-10 -ml-[5px] px-0.5"
-            describedBy={id}
-            onClick={() => setExpanded((state) => !state)}
-          >
-            {isExpanded ? (
-              <ChevronDownIcon aria-label="Hide Children" />
-            ) : (
-              <ChevronRightIcon aria-label="Show Children" />
-            )}
-          </Pressable>
-        )}
-        {!isCustomComponent && !hasChildren && (
-          <div className="-ml-[5px] flex flex-shrink-0 items-center px-0.5 opacity-0">
-            <ComponentInstanceIcon />
-          </div>
-        )}
+        <ShowElementChildrenButton
+          hasChildren={hasChildren}
+          id={id}
+          isCustomComponent={isCustomComponent}
+          isExpanded={isExpanded}
+          isImportedComponent={isImportedComponent}
+          setExpanded={setExpanded}
+        />
         <Pressable
           actionId="scenepanel_element_focus"
           className="outline-offset-inset absolute inset-0"
