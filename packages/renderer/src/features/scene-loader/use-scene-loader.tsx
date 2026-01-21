@@ -22,6 +22,10 @@ export function useSceneLoader({
   modules: Modules;
   path: string;
 }): Scene | null {
+  if (modules == undefined || modules == null) {
+    return null;
+  }
+
   const relativePathToPickComponent = Object.keys(modules).find((filename) =>
     path ? path.endsWith(filename) : false,
   );

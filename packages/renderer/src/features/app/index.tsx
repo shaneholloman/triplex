@@ -118,26 +118,28 @@ export function App({
           }
           resetKeys={[component]}
         >
-          <Suspense
-            fallback={
-              <LoadingLogo
-                color="rgb(59 130 246)"
-                position="hint"
-                variant="stroke"
+          <div style={{ height: "100%", position: "relative", width: "100%" }}>
+            <Suspense
+              fallback={
+                <LoadingLogo
+                  color="rgb(59 130 246)"
+                  position="hint"
+                  variant="stroke"
+                />
+              }
+            >
+              <SceneLoader
+                exportName={component.exportName}
+                modules={files}
+                path={component.path}
+                providerPath={providerPath}
+                providers={providers}
+                sceneProps={component.props}
               />
-            }
-          >
-            <SceneLoader
-              exportName={component.exportName}
-              modules={files}
-              path={component.path}
-              providerPath={providerPath}
-              providers={providers}
-              sceneProps={component.props}
-            />
-          </Suspense>
-          <Tunnel.Out />
-          <DebugAttributes />
+            </Suspense>
+            <Tunnel.Out />
+            <DebugAttributes />
+          </div>
         </ErrorBoundaryForScene>
       </PlayStateProvider>
     </SwitchToComponentContext.Provider>

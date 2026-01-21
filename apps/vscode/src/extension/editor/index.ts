@@ -187,25 +187,47 @@ export class TriplexEditorProvider
           sendVSCE(panel.webview, "vscode:request-blur-element", undefined);
           await document.deleteElement(element);
         }),
+        on(panel.webview, "component-insert", async (data) => {
+          return document.insertComponent(data);
+        }),
         on(panel.webview, "notification", async (data) => {
+          let promise: Thenable<(typeof data)["actions"][number] | undefined>;
+
           switch (data.type) {
             case "info":
-              return vscode.window.showInformationMessage(
+              promise = vscode.window.showInformationMessage(
                 data.message,
                 ...data.actions,
               );
+              break;
 
             case "warning":
-              return vscode.window.showWarningMessage(
+              promise = vscode.window.showWarningMessage(
                 data.message,
                 ...data.actions,
               );
+              break;
 
             case "error":
-              return vscode.window.showErrorMessage(
+              promise = vscode.window.showErrorMessage(
                 data.message,
                 ...data.actions,
               );
+              break;
+          }
+
+          const result = await promise;
+
+          if (result === "View Triplex Config") {
+            const configUri = vscode.Uri.joinPath(
+              vscode.Uri.file(triplexProjectCwd),
+              ".triplex",
+              "config.json",
+            );
+            await vscode.window.showTextDocument(configUri, {
+              preview: true,
+              viewColumn: vscode.ViewColumn.Beside,
+            });
           }
         }),
         on(panel.webview, "terminal", (data) => {

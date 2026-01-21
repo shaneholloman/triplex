@@ -171,6 +171,7 @@ export interface ClientSendEventData {
 
 export interface ClientSendEventResponse {
   "api-debug": void;
+  "component-insert": void;
   "component-opened": void;
   "component-rendered": void;
   "element-blurred": void;

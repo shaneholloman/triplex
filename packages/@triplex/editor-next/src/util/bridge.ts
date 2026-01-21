@@ -85,6 +85,12 @@ export interface ToVSCodeEvent extends ClientSendEventData {
         path: string;
         type: "add";
       };
+  "component-insert": {
+    exportName: string;
+    insertingExportName: string;
+    insertingPath: string;
+    path: string;
+  };
   "element-delete": {
     astPath: string;
     column: number;
@@ -110,7 +116,7 @@ export interface ToVSCodeEvent extends ClientSendEventData {
     source: { astPath: string; column: number; line: number };
   };
   notification: {
-    actions: string[];
+    actions: "View Triplex Config"[];
     message: string;
     type: "info" | "warning" | "error";
   };
